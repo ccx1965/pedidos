@@ -1,4 +1,5 @@
 document.getElementById("hacer-pedido").addEventListener("click", function () {
+  // Números de pedido
   const productos = [
     { id: "arrollado-aji", nombre: "Arrollado Huaso con Ají" },
     { id: "arrollado-sin-aji", nombre: "Arrollado Huaso sin Ají" },
@@ -10,51 +11,41 @@ document.getElementById("hacer-pedido").addEventListener("click", function () {
     { id: "jamon-praga-entero", nombre: "Jamón Praga Entero" },
     { id: "jamon-pierna-mitad", nombre: "Jamón Pierna Mitad" },
     { id: "jamon-pierna-entero", nombre: "Jamón Pierna Entero" },
-    { id: "longaniza-tradicional", nombre: "Longaniza Tradicional (kilos)" },
-    {
-      id: "longaniza-surena-vacio",
-      nombre: "Longaniza Sureña al Vacío (kilos)"
-    },
-    {
-      id: "longaniza-tradicional-vacio",
-      nombre: "Longaniza Tradicional al Vacío (kilos)"
-    },
-    {
-      id: "longaniza-surena-granel",
-      nombre: "Longaniza Sureña Granel (kilos)"
-    },
-    { id: "longaniza-larga", nombre: "Longaniza Larga (kilos)" },
+    { id: "longaniza-tradicional", nombre: "Kilos de Longaniza Tradicional" },
+    { id: "longaniza-surena-vacio", nombre: "Kilos Longaniza Sureña al Vacío" },
+    { id: "longaniza-tradicional-vacio", nombre: "Kilos Longaniza Tradicional al Vacío" },
+    { id: "longaniza-surena-granel", nombre: "Kilos Longaniza Sureña Granel" },
+    { id: "longaniza-larga", nombre: "Kilos Longaniza Larga" },
     { id: "queso-cabeza-manga", nombre: "Queso de Cabeza Manga" },
     { id: "queso-cabeza-molde-mitad", nombre: "Queso de Cabeza Molde Mitad" },
     { id: "queso-cabeza-molde-entero", nombre: "Queso de Cabeza Molde Entero" },
     { id: "kilos-chorizo", nombre: "Kilos Chorizo" },
-    { id: "kilos-choricillo", nombre: "Kilos Choricillo" }
+    { id: "kilos-choricillo", nombre: "Kilos Choricillo" },
   ];
 
-  let mensaje = "Hola, quisiera realizar el siguiente pedido:\n";
-
+  // Obteniendo valores
+  let mensaje = "Hola, me gustaría hacer el siguiente pedido:%0A";
   productos.forEach((producto) => {
     const cantidad = document.getElementById(producto.id).value;
     if (cantidad > 0) {
-      mensaje += `- ${producto.nombre}: ${cantidad}\n`;
+      mensaje += `- ${producto.nombre}: ${cantidad}%0A`;
     }
   });
 
-  const fechaRetiro = document.getElementById("dia").value;
-  const horaRetiro = document.getElementById("time").value;
+  const fecha = document.getElementById("dia").value;
+  const hora = document.getElementById("time").value;
 
-  if (fechaRetiro) {
-    mensaje += `\nFecha de retiro: ${fechaRetiro}`;
+  if (fecha) {
+    mensaje += `%0AFecha de retiro: ${fecha}`;
+  }
+  if (hora) {
+    mensaje += `%0AHora de retiro: ${hora}`;
   }
 
-  if (horaRetiro) {
-    mensaje += `\nHora de retiro: ${horaRetiro}`;
-  }
+  // Número de WhatsApp
+  const telefono = "56948936070";
+  const url = `https://wa.me/${telefono}?text=${mensaje}`;
 
-  const numeroWhatsApp = "+56948936070";
-  const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(
-    mensaje
-  )}`;
-
+  // Redirigir a WhatsApp
   window.open(url, "_blank");
 });
