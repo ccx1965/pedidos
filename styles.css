@@ -3,17 +3,17 @@ body {
   font-weight: bold;
   margin: 20px;
   padding: 0;
-  background-color: #cdfcfd;
+  background-color: #CF3349;
 }
 
 .title-container {
   display: center;
   text-align: center;
   margin-bottom: 40px;
-  border: 4px solid #fdcd09;
+  border: 4px solid #08652E;
   border-radius: 15px;
   padding: 3px;
-  background-color: #f4e977;
+  background-color: #2E9C5B;
 }
 
 .title-container h1 {
@@ -47,7 +47,7 @@ body {
 button {
   background-color: #31c609;
   color: black;
-  border: 2px solid #fdcd09;
+  border: 2px solid #CF3349;
   padding: 10px 30px;
   font-size: 16px;
   border-radius: 10px;
