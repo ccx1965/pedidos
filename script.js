@@ -35,16 +35,18 @@ document.getElementById("hacer-pedido").addEventListener("click", function () {
   const fecha = document.getElementById("dia").value;
   const hora = document.getElementById("time").value;
 
-  if (fecha) {
-    mensaje += `%0AFecha de retiro: ${fecha}`;
+  // Validación de fecha y hora
+  if (!fecha || !hora) {
+    alert("Debe completar los casilleros de Fecha y Hora de retiro.");
+    return; // Detenemos la ejecución si falta alguno de los campos
   }
-  if (hora) {
-    mensaje += `%0AHora de retiro: ${hora}`;
-  }
+
+  mensaje += `%0AFecha de retiro: ${fecha}`;
+  mensaje += `%0AHora de retiro: ${hora}`;
 
   // Número de WhatsApp
   const numero = "56948936070";
-  const url = `https://wa.me/${948936070}?text=${mensaje}`;
+  const url = `https://wa.me/${numero}?text=${mensaje}`;
 
   // Redirigir a WhatsApp
   window.open(url, "_blank");
