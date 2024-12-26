@@ -46,7 +46,7 @@ document.getElementById("hacer-pedido").addEventListener("click", function () {
 
   // Número de WhatsApp
   const numero = "56948936070";
-  const url = `https://wa.me/${numero}?text=${mensaje}`;
+  const url = `https://wa.me/948936070?text=${mensaje}`;
 
   // Redirigir a WhatsApp
   window.open(url, "_blank");
