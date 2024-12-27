@@ -13,14 +13,17 @@ document.getElementById("hacer-pedido").addEventListener("click", function () {
     { id: "jamon-pierna-entero", nombre: "Jamón Pierna Entero" },
     { id: "longaniza-tradicional", nombre: "Kilos de Longaniza Tradicional" },
     { id: "longaniza-surena-vacio", nombre: "Kilos Longaniza Sureña al Vacío" },
-    { id: "longaniza-tradicional-vacio", nombre: "Kilos Longaniza Tradicional al Vacío" },
+    {
+      id: "longaniza-tradicional-vacio",
+      nombre: "Kilos Longaniza Tradicional al Vacío"
+    },
     { id: "longaniza-surena-granel", nombre: "Kilos Longaniza Sureña Granel" },
     { id: "longaniza-larga", nombre: "Kilos Longaniza Larga" },
     { id: "queso-cabeza-manga", nombre: "Queso de Cabeza Manga" },
     { id: "queso-cabeza-molde-mitad", nombre: "Queso de Cabeza Molde Mitad" },
     { id: "queso-cabeza-molde-entero", nombre: "Queso de Cabeza Molde Entero" },
     { id: "kilos-chorizo", nombre: "Kilos Chorizo" },
-    { id: "kilos-choricillo", nombre: "Kilos Choricillo" },
+    { id: "kilos-choricillo", nombre: "Kilos Choricillo" }
   ];
 
   // Obteniendo valores
@@ -46,7 +49,7 @@ document.getElementById("hacer-pedido").addEventListener("click", function () {
 
   // Número de WhatsApp
   const numero = "56948936070";
-  const url = `https://wa.me/948936070?text=${mensaje}`;
+  const url = `https://web.whatsapp.com/send?phone=56${948936070}`; // 56 es el código de país para Chile/${948936070}?text=${mensaje}`;
 
   // Redirigir a WhatsApp
   window.open(url, "_blank");
