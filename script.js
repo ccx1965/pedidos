@@ -24,18 +24,32 @@ document.getElementById("hacer-pedido").addEventListener("click", function () {
       { id: "kilos-choricillo", nombre: "Kilos Choricillo" }
     ];
 
-    // Obteniendo valores
-    let mensaje = "Hola, me gustaría hacer el siguiente pedido:%0A";
+    // Verificar si hay al menos un producto seleccionado
+    let hayProductos = false;
     productos.forEach((producto) => {
       const cantidad = parseInt(document.getElementById(producto.id).value, 10);
       if (cantidad > 0 && !isNaN(cantidad)) {
-        mensaje += `- ${producto.nombre}: ${cantidad}%0A`;
+        hayProductos = true;
+      }
+    });
+
+    if (!hayProductos) {
+      alert("Debe seleccionar al menos un producto para realizar el pedido.");
+      return;
+    }
+
+    // Obteniendo valores
+    let mensaje = "Hola, me gustaría hacer el siguiente pedido:\n\n";
+    productos.forEach((producto) => {
+      const cantidad = parseInt(document.getElementById(producto.id).value, 10);
+      if (cantidad > 0 && !isNaN(cantidad)) {
+        mensaje += `- ${producto.nombre}: ${cantidad}\n`;
       }
     });
 
     const fecha = document.getElementById("dia").value;
     const hora = document.getElementById("time").value;
-
+    
     // Validación de fecha y hora
     if (!fecha || !hora) {
       alert("Debe completar los casilleros de Fecha y Hora de retiro.");
@@ -48,17 +62,24 @@ document.getElementById("hacer-pedido").addEventListener("click", function () {
       return;
     }
 
-    mensaje += `%0AFecha de retiro: ${fecha}`;
-    mensaje += `%0AHora de retiro: ${hora}`;
+    mensaje += `\nFecha de retiro: ${fecha}`;
+    mensaje += `\nHora de retiro: ${hora}`;
 
     // Número de WhatsApp
     const numero = "56948936070";
-    const url = `https://web.whatsapp.com/send?phone=${numero}&text=${mensaje}`;
+    
+    // Codificar mensaje para URL
+    const mensajeCodificado = encodeURIComponent(mensaje);
+    
+    // URL de WhatsApp
+    const url = `https://api.whatsapp.com/send?phone=${numero}&text=${mensajeCodificado}`;
 
     // Confirmación antes de redirigir
     const confirmacion = confirm("¿Estás seguro de que quieres realizar este pedido?");
+    
     if (confirmacion) {
-      window.open(url, "_blank");
+      // Abrir en una nueva ventana/pestaña
+      window.open(url, '_blank');
     }
   } catch (error) {
     console.error("Ocurrió un error:", error);
