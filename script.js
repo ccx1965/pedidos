@@ -65,21 +65,33 @@ document.getElementById("hacer-pedido").addEventListener("click", function () {
     mensaje += `\nFecha de retiro: ${fecha}`;
     mensaje += `\nHora de retiro: ${hora}`;
 
-    // Número de WhatsApp
+    // Número de WhatsApp (incluye código de país)
     const numero = "56948936070";
     
     // Codificar mensaje para URL
     const mensajeCodificado = encodeURIComponent(mensaje);
     
-    // URL de WhatsApp
-    const url = `https://api.whatsapp.com/send?phone=${numero}&text=${mensajeCodificado}`;
-
     // Confirmación antes de redirigir
     const confirmacion = confirm("¿Estás seguro de que quieres realizar este pedido?");
     
     if (confirmacion) {
-      // Abrir en una nueva ventana/pestaña
-      window.open(url, '_blank');
+      // Detectar dispositivo móvil
+      const esMobil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      if (esMobil) {
+        // Intentar abrir la app nativa de WhatsApp en móviles
+        window.location.href = `whatsapp://send?phone=${numero}&text=${mensajeCodificado}`;
+        
+        // Verificar si se abrió la app después de un breve tiempo
+        setTimeout(function() {
+          // Si todavía estamos en la misma página, es probable que no se haya abierto la app
+          // Intentar con el enlace web como respaldo
+          window.location.href = `https://api.whatsapp.com/send?phone=${numero}&text=${mensajeCodificado}`;
+        }, 300);
+      } else {
+        // En escritorio, usar directamente la versión web
+        window.open(`https://web.whatsapp.com/send?phone=${numero}&text=${mensajeCodificado}`, '_blank');
+      }
     }
   } catch (error) {
     console.error("Ocurrió un error:", error);
