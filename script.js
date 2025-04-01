@@ -96,38 +96,20 @@ document.getElementById("hacer-pedido").addEventListener("click", function () {
       
       // Verificar si se abrió la app y usar el enlace web como respaldo
       const startTime = Date.now();
-      const fallbackTimeout = 1200; // Esperar 1.2 segundos
-      
+      const fallbackTimeout = 2000; // Aumentar el tiempo a 2 segundos
       const checkIfAppOpened = function() {
-        if (document.hidden || document.webkitHidden) {
-          // La aplicación probablemente se abrió porque la página perdió el foco
-          return;
-        }
-        
         if (Date.now() - startTime >= fallbackTimeout) {
-          // Han pasado 1.2 segundos y seguimos en la misma página, usar la versión web
+          // Han pasado 2 segundos y seguimos en la misma página, usar la versión web
           window.location.href = whatsappWebLink;
         } else {
-          // Verificar de nuevo en 100ms
-          setTimeout(checkIfAppOpened, 100);
+          // Verificar de nuevo en 200ms
+          setTimeout(checkIfAppOpened, 200);
         }
       };
       
       // Iniciar la verificación
-      setTimeout(checkIfAppOpened, 300);
+      setTimeout(checkIfAppOpened, 500); // Ajustar tiempo de espera antes de la primera verificación
       
-      // Si la página pierde el foco, probablemente la app se abrió
-      const visibilityChange = function() {
-        if (document.hidden || document.webkitHidden) {
-          // Detener las verificaciones
-          window.removeEventListener('visibilitychange', visibilityChange);
-          window.removeEventListener('webkitvisibilitychange', visibilityChange);
-        }
-      };
-      
-      // Agregar listeners para detectar si la página pierde el foco
-      window.addEventListener('visibilitychange', visibilityChange);
-      window.addEventListener('webkitvisibilitychange', visibilityChange);
     }
   } catch (error) {
     console.error("Ocurrió un error:", error);
