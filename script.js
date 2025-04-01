@@ -75,26 +75,68 @@ document.getElementById("hacer-pedido").addEventListener("click", function () {
     const confirmacion = confirm("¿Estás seguro de que quieres realizar este pedido?");
     
     if (confirmacion) {
-      // Detectar dispositivo móvil
-      const esMobil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      // Crear enlaces para ambos métodos
+      const whatsappAppLink = `whatsapp://send?phone=${numero}&text=${mensajeCodificado}`;
+      const whatsappWebLink = `https://api.whatsapp.com/send?phone=${numero}&text=${mensajeCodificado}`;
       
-      if (esMobil) {
-        // Intentar abrir la app nativa de WhatsApp en móviles
-        window.location.href = `whatsapp://send?phone=${numero}&text=${mensajeCodificado}`;
+      // Crear un elemento invisible en el DOM
+      const linkElement = document.createElement('a');
+      linkElement.setAttribute('href', whatsappAppLink);
+      linkElement.setAttribute('id', 'whatsapp-link');
+      linkElement.style.display = 'none';
+      document.body.appendChild(linkElement);
+      
+      // Intentar abrir usando el enlace nativo
+      linkElement.click();
+      
+      // Limpiar el elemento creado
+      setTimeout(function() {
+        document.body.removeChild(linkElement);
+      }, 100);
+      
+      // Verificar si se abrió la app y usar el enlace web como respaldo
+      const startTime = Date.now();
+      const fallbackTimeout = 1200; // Esperar 1.2 segundos
+      
+      const checkIfAppOpened = function() {
+        if (document.hidden || document.webkitHidden) {
+          // La aplicación probablemente se abrió porque la página perdió el foco
+          return;
+        }
         
-        // Verificar si se abrió la app después de un breve tiempo
-        setTimeout(function() {
-          // Si todavía estamos en la misma página, es probable que no se haya abierto la app
-          // Intentar con el enlace web como respaldo
-          window.location.href = `https://api.whatsapp.com/send?phone=${numero}&text=${mensajeCodificado}`;
-        }, 300);
-      } else {
-        // En escritorio, usar directamente la versión web
-        window.open(`https://web.whatsapp.com/send?phone=${numero}&text=${mensajeCodificado}`, '_blank');
-      }
+        if (Date.now() - startTime >= fallbackTimeout) {
+          // Han pasado 1.2 segundos y seguimos en la misma página, usar la versión web
+          window.location.href = whatsappWebLink;
+        } else {
+          // Verificar de nuevo en 100ms
+          setTimeout(checkIfAppOpened, 100);
+        }
+      };
+      
+      // Iniciar la verificación
+      setTimeout(checkIfAppOpened, 300);
+      
+      // Si la página pierde el foco, probablemente la app se abrió
+      const visibilityChange = function() {
+        if (document.hidden || document.webkitHidden) {
+          // Detener las verificaciones
+          window.removeEventListener('visibilitychange', visibilityChange);
+          window.removeEventListener('webkitvisibilitychange', visibilityChange);
+        }
+      };
+      
+      // Agregar listeners para detectar si la página pierde el foco
+      window.addEventListener('visibilitychange', visibilityChange);
+      window.addEventListener('webkitvisibilitychange', visibilityChange);
     }
   } catch (error) {
     console.error("Ocurrió un error:", error);
     alert("Ocurrió un error al procesar tu pedido. Por favor, inténtalo de nuevo.");
+    
+    // En caso de error, intentar el método más directo
+    const numero = "56948936070";
+    const mensaje = "Pedido de Cecinas Satorres (Error en la aplicación, por favor contactarme)";
+    const mensajeCodificado = encodeURIComponent(mensaje);
+    window.location.href = `https://api.whatsapp.com/send?phone=${numero}&text=${mensajeCodificado}`;
   }
 });
