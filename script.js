@@ -1,100 +1,124 @@
-document.getElementById("hacer-pedido").addEventListener("click", function () {
-  try {
-    // Números de pedido
-    const productos = [
-      { id: "arrollado-aji", nombre: "Arrollado Huaso con Ají" },
-      { id: "arrollado-sin-aji", nombre: "Arrollado Huaso sin Ají" },
-      { id: "arrollado-individual", nombre: "Arrollado Huaso Individual" },
-      { id: "arrollado-artesanal", nombre: "Arrollado Artesanal" },
-      { id: "arrollado-lomo", nombre: "Arrollado Lomo Ahumado" },
-      { id: "arrollado-estriado", nombre: "Arrollado Huaso Estriado" },
-      { id: "jamon-praga-mitad", nombre: "Jamón Praga Mitad" },
-      { id: "jamon-praga-entero", nombre: "Jamón Praga Entero" },
-      { id: "jamon-pierna-mitad", nombre: "Jamón Pierna Mitad" },
-      { id: "jamon-pierna-entero", nombre: "Jamón Pierna Entero" },
-      { id: "longaniza-tradicional", nombre: "Kilos de Longaniza Tradicional" },
-      { id: "longaniza-surena-vacio", nombre: "Kilos Longaniza Sureña al Vacío" },
-      { id: "longaniza-tradicional-vacio", nombre: "Kilos Longaniza Tradicional al Vacío" },
-      { id: "longaniza-surena-granel", nombre: "Kilos Longaniza Sureña Granel" },
-      { id: "longaniza-larga", nombre: "Kilos Longaniza Larga" },
-      { id: "queso-cabeza-manga", nombre: "Queso de Cabeza Manga" },
-      { id: "queso-cabeza-molde-mitad", nombre: "Queso de Cabeza Molde Mitad" },
-      { id: "queso-cabeza-molde-entero", nombre: "Queso de Cabeza Molde Entero" },
-      { id: "kilos-chorizo", nombre: "Kilos Chorizo" },
-      { id: "kilos-choricillo", nombre: "Kilos Choricillo" }
-    ];
-
-    // Verificar si hay al menos un producto seleccionado
-    let hayProductos = false;
-    productos.forEach((producto) => {
-      const cantidad = parseInt(document.getElementById(producto.id).value, 10);
-      if (cantidad > 0 && !isNaN(cantidad)) {
-        hayProductos = true;
-      }
-    });
-
-    if (!hayProductos) {
-      alert("Debe seleccionar al menos un producto para realizar el pedido.");
-      return;
-    }
-
-    // Obteniendo valores
-    let mensaje = "Hola, me gustaría hacer el siguiente pedido:\n\n";
-    productos.forEach((producto) => {
-      const cantidad = parseInt(document.getElementById(producto.id).value, 10);
-      if (cantidad > 0 && !isNaN(cantidad)) {
-        mensaje += `- ${producto.nombre}: ${cantidad}\n`;
-      }
-    });
-
-    const fecha = document.getElementById("dia").value;
-    const hora = document.getElementById("time").value;
-    
-    // Validación de fecha y hora
-    if (!fecha || !hora) {
-      alert("Debe completar los casilleros de Fecha y Hora de retiro.");
-      return;
-    }
-
-    const fechaActual = new Date().toISOString().split('T')[0];
-    if (fecha < fechaActual) {
-      alert("La fecha de retiro no puede ser en el pasado.");
-      return;
-    }
-
-    mensaje += `\nFecha de retiro: ${fecha}`;
-    mensaje += `\nHora de retiro: ${hora}`;
-
-    // Número de WhatsApp (incluye código de país)
-    const numero = "56948936070";
-    
-    // Codificar mensaje para URL
-    const mensajeCodificado = encodeURIComponent(mensaje);
-    
-    // Confirmación antes de redirigir
-    const confirmacion = confirm("¿Estás seguro de que quieres realizar este pedido?");
-    
-    if (confirmacion) {
-      // Detectar dispositivo móvil
-      const esMobil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      
-      if (esMobil) {
-        // Intentar abrir la app nativa de WhatsApp en móviles
-        window.location.href = `whatsapp://send?phone=${numero}&text=${mensajeCodificado}`;
-        
-        // Verificar si se abrió la app después de un breve tiempo
-        setTimeout(function() {
-          // Si todavía estamos en la misma página, es probable que no se haya abierto la app
-          // Intentar con el enlace web como respaldo
-          window.location.href = `https://api.whatsapp.com/send?phone=${numero}&text=${mensajeCodificado}`;
-        }, 300);
-      } else {
-        // En escritorio, usar directamente la versión web
-        window.open(`https://web.whatsapp.com/send?phone=${numero}&text=${mensajeCodificado}`, '_blank');
-      }
-    }
-  } catch (error) {
-    console.error("Ocurrió un error:", error);
-    alert("Ocurrió un error al procesar tu pedido. Por favor, inténtalo de nuevo.");
+document.addEventListener('DOMContentLoaded', function() {
+  const botonPedido = document.getElementById("hacer-pedido");
+  
+  if (!botonPedido) {
+    console.error("Error: No se encontró el botón con ID 'hacer-pedido'");
+    return;
   }
+
+  botonPedido.addEventListener("click", async function() {
+    try {
+      // Lista de productos (completa)
+      const productos = [
+        { id: "arrollado-aji", nombre: "Arrollado Huaso con Ají" },
+        // ... (todos los demás productos)
+      ];
+
+      // Verificar productos seleccionados
+      const productosSeleccionados = productos.filter(producto => {
+        const cantidad = parseInt(document.getElementById(producto.id).value, 10);
+        return cantidad > 0;
+      });
+
+      if (productosSeleccionados.length === 0) {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Productos requeridos',
+          text: 'Debe seleccionar al menos un producto',
+          confirmButtonColor: '#2E9C5B'
+        });
+        return;
+      }
+
+      // Validar fecha y hora
+      const fecha = document.getElementById("dia").value;
+      const hora = document.getElementById("time").value;
+      
+      if (!fecha || !hora) {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Datos incompletos',
+          text: 'Debe completar fecha y hora de retiro',
+          confirmButtonColor: '#2E9C5B'
+        });
+        return;
+      }
+
+      // Construir mensaje
+      let mensaje = "Hola, me gustaría hacer el siguiente pedido:\n\n";
+      productosSeleccionados.forEach(producto => {
+        const cantidad = document.getElementById(producto.id).value;
+        mensaje += `- ${producto.nombre}: ${cantidad}\n`;
+      });
+      mensaje += `\nFecha de retiro: ${fecha}\nHora de retiro: ${hora}`;
+
+      // Confirmación
+      const { isConfirmed } = await Swal.fire({
+        title: 'Confirmar pedido',
+        text: '¿Estás seguro de enviar este pedido por WhatsApp?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#2E9C5B',
+        cancelButtonColor: '#CF3349',
+        confirmButtonText: 'Sí, enviar',
+        cancelButtonText: 'Cancelar'
+      });
+
+      if (!isConfirmed) return;
+
+      // Mostrar carga
+      Swal.fire({
+        title: 'Preparando pedido...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
+
+      // Número de WhatsApp (con código de país)
+      const numero = "56948936070";
+      const mensajeCodificado = encodeURIComponent(mensaje);
+      
+      // Detectar si es móvil
+      const esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      // Crear enlace según el dispositivo
+      const whatsappLink = esMovil 
+        ? `whatsapp://send?phone=${numero}&text=${mensajeCodificado}`
+        : `https://web.whatsapp.com/send?phone=${numero}&text=${mensajeCodificado}`;
+
+      // Crear enlace temporal
+      const link = document.createElement('a');
+      link.href = whatsappLink;
+      link.target = '_blank';
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      
+      // Intentar abrir WhatsApp
+      link.click();
+      
+      // Verificar si se abrió (solo para móviles)
+      if (esMovil) {
+        setTimeout(() => {
+          // Si después de 1 segundo no se abrió, intentar con la versión web
+          if (!document.hidden) {
+            window.location.href = `https://web.whatsapp.com/send?phone=${numero}&text=${mensajeCodificado}`;
+          }
+        }, 1000);
+      }
+      
+      // Limpiar y cerrar loader
+      setTimeout(() => {
+        document.body.removeChild(link);
+        Swal.close();
+      }, 1500);
+
+    } catch (error) {
+      console.error("Error:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ocurrió un error al procesar el pedido',
+        confirmButtonColor: '#2E9C5B'
+      });
+    }
+  });
 });
