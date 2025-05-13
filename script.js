@@ -8,13 +8,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
   botonPedido.addEventListener("click", async function() {
     try {
-      // Lista de productos (completa)
+      // Lista de productos
       const productos = [
         { id: "arrollado-aji", nombre: "Arrollado Huaso con Ají" },
-        // ... (todos los demás productos)
+        { id: "arrollado-sin-aji", nombre: "Arrollado Huaso sin Ají" },
+        // ... (Asegúrate de incluir TODOS tus productos aquí)
       ];
 
-      // Verificar productos seleccionados
+      // Validar productos seleccionados
       const productosSeleccionados = productos.filter(producto => {
         const cantidad = parseInt(document.getElementById(producto.id).value, 10);
         return cantidad > 0;
@@ -44,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
-      // Construir mensaje
+      // Construir mensaje para WhatsApp
       let mensaje = "Hola, me gustaría hacer el siguiente pedido:\n\n";
       productosSeleccionados.forEach(producto => {
         const cantidad = document.getElementById(producto.id).value;
@@ -52,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
       mensaje += `\nFecha de retiro: ${fecha}\nHora de retiro: ${hora}`;
 
-      // Confirmación
+      // Confirmación final
       const { isConfirmed } = await Swal.fire({
         title: 'Confirmar pedido',
         text: '¿Estás seguro de enviar este pedido por WhatsApp?',
@@ -73,43 +74,33 @@ document.addEventListener('DOMContentLoaded', function() {
         didOpen: () => Swal.showLoading()
       });
 
-      // Número de WhatsApp (con código de país)
+      // Número de WhatsApp (¡verifica que sea correcto!)
       const numero = "56948936070";
       const mensajeCodificado = encodeURIComponent(mensaje);
-      
-      // Detectar si es móvil
-      const esMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      
-      // Crear enlace según el dispositivo
-      const whatsappLink = esMovil 
-        ? `whatsapp://send?phone=${numero}&text=${mensajeCodificado}`
-        : `https://web.whatsapp.com/send?phone=${numero}&text=${mensajeCodificado}`;
 
-      // Crear enlace temporal
-      const link = document.createElement('a');
-      link.href = whatsappLink;
-      link.target = '_blank';
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      
-      // Intentar abrir WhatsApp
-      link.click();
-      
-      // Verificar si se abrió (solo para móviles)
-      if (esMovil) {
+      // Función mejorada para abrir WhatsApp
+      const abrirWhatsApp = () => {
+        // Intento 1: Esquema nativo (para móviles con WhatsApp instalado)
+        const linkApp = document.createElement('a');
+        linkApp.href = `whatsapp://send?phone=${numero}&text=${mensajeCodificado}`;
+        document.body.appendChild(linkApp);
+        linkApp.click();
+
+        // Intento 2: Si falla, abre WhatsApp Web (después de 400ms)
         setTimeout(() => {
-          // Si después de 1 segundo no se abrió, intentar con la versión web
-          if (!document.hidden) {
-            window.location.href = `https://web.whatsapp.com/send?phone=${numero}&text=${mensajeCodificado}`;
-          }
-        }, 1000);
-      }
-      
-      // Limpiar y cerrar loader
+          if (!document.hidden) return; // Si ya se abrió, no hacer nada
+          window.open(`https://api.whatsapp.com/send?phone=${numero}&text=${mensajeCodificado}`, '_blank');
+        }, 400);
+
+        // Limpiar
+        setTimeout(() => document.body.removeChild(linkApp), 500);
+      };
+
+      // Ejecutar
       setTimeout(() => {
-        document.body.removeChild(link);
         Swal.close();
-      }, 1500);
+        abrirWhatsApp();
+      }, 800);
 
     } catch (error) {
       console.error("Error:", error);
