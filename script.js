@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // ... (Código para construir el mensaje)
 
       // Número de WhatsApp (asegúrate que sea correcto)
-      const numero = "56948936070";
+      const numero = "+56948936070";
       const mensajeCodificado = encodeURIComponent(mensaje);
 
       // SOLUCIÓN DEFINITIVA PARA ABRIR WHATSAPP
